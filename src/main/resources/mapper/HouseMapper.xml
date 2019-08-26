@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wb.mapper.HouseMapper">
+    <insert id="fabu">
+INSERT INTO `t_house` (
+	`house_name`,
+	`house_rect`,
+	`house_date`,
+	`house_loc1`,
+	`house_loc2`,
+	`house_img`,
+	`user_id`
+)
+VALUES
+	(#{houseName},#{houseRect},#{houseDate},#{houseLoc1},#{houseLoc2},#{houseImg},#{user.userId});
+   </insert>
+    <select id="search" resultMap="myHouse">
+        select * from t_house
+        <where>
+            <if test="houseName!=null and houseName!='' ">
+                house_name like '%${houseName}%'
+            </if>
+            <if test="minRect!=null and maxRect!=null">
+                and house_rect between #{minRect} and #{maxRect}
+            </if>
+        </where>
+    </select>
+    <resultMap id="myHouse" type="house">
+        <id column="house_id" property="houseId"/>
+        <result column="house_name" property="houseName"/>
+        <result column="house_rect" property="houseRect"/>
+        <result column="house_date" property="houseDate"/>
+        <result column="house_loc1" property="houseLoc1"/>
+        <result column="house_loc2" property="houseLoc2"/>
+        <result column="house_img" property="houseImg"/>
+        <association property="user" javaType="user">
+            <id column="user_id" property="userId"/>
+            <result column="user_name" property="userName"/>
+            <result column="user_pass" property="userPass"/>
+            <result column="user_tel" property="userTel"/>
+            <result column="user_real_name" property="userRealName"/>
+        </association>
+    </resultMap>
+    <select id="findById" resultMap="myHouse">
+		select * from t_house h,t_user u where h.user_id=u.user_id and h.house_id=#{houseId}
+	</select>
+    <select id="findByUserId" resultMap="myHouse">
+        select * from t_house h,t_user u where h.user_id=u.user_id and h.user_id=#{userId}
+    </select>
+    <delete id="delete">
+        delete from t_house where house_id=#{houseId}
+    </delete>
+    <update id="update">
+        update t_house
+        set
+         house_name = #{houseName},
+         house_rect = #{houseRect},
+         house_date = #{houseDate},
+         house_loc1= #{houseLoc1},
+         house_loc2 = #{houseLoc2},
+         house_img = #{houseImg}
+        where house_id=#{houseId}
+    </update>
+</mapper>
